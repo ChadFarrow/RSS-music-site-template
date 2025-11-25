@@ -52,6 +52,8 @@ Key environment variables you can customize in `.env.local`:
 # Site Configuration
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_SITE_NAME="Your Music Site Name"  # Site branding (defaults to "Music Site")
+ADMIN_PASSPHRASE=admin  # Admin panel passphrase (change this!)
 
 # Lightning Features (true/false)
 NEXT_PUBLIC_ENABLE_LIGHTNING=true
@@ -65,6 +67,11 @@ NEXT_PUBLIC_ENABLE_LIGHTNING=true
 # Optional: Podcast Index API
 # PODCAST_INDEX_API_KEY=your-api-key
 # PODCAST_INDEX_API_SECRET=your-api-secret
+
+# Optional: Site Nostr Account (for permanent Nostr identity)
+# Generate with: node scripts/generate-nostr-keys.js
+# NEXT_PUBLIC_SITE_NOSTR_NSEC=nsec1...
+# NEXT_PUBLIC_SITE_NOSTR_NPUB=npub1...
 ```
 
 ## Configuration
@@ -111,6 +118,12 @@ The site name will appear in:
 - `npm run dev-setup` - Check environment configuration
 - `npm run test-feeds` - Test RSS feed parsing
 - `npm run auto-add-publishers` - Auto-generate publisher feeds
+
+### Utility Scripts
+
+- `node scripts/generate-nostr-keys.js` - Generate Nostr keys for site account
+- `node scripts/update-feed.js <feed-id> <feed-url>` - Update a specific feed in parsed-feeds.json
+- `./scripts/update-static-data.sh` - Update static album cache
 
 ## Features
 
@@ -200,6 +213,29 @@ The app uses a hybrid approach:
 - **Relay Publishing**: Automatic posting to Primal, Snort, Nostr Band, Fountain, and Damus
 - **Profile Integration**: Nostr profile links and nevent generation
 - **Podcast Metadata**: Rich boost content with album art and track information
+
+#### Setting Up Site Nostr Account (Optional)
+
+To give your site a permanent Nostr identity for posting boosts:
+
+1. **Generate Nostr keys:**
+   ```bash
+   node scripts/generate-nostr-keys.js
+   ```
+
+2. **Add to your `.env.local`:**
+   ```bash
+   NEXT_PUBLIC_SITE_NOSTR_NSEC=nsec1...
+   NEXT_PUBLIC_SITE_NOSTR_NPUB=npub1...
+   ```
+
+3. **Benefits:**
+   - All boosts posted from your site's account
+   - Users can follow your site's Nostr profile
+   - Boosts page aggregates all site boosts
+   - Consistent branding across Nostr network
+
+**Note:** If not configured, the site will auto-generate keys per user (stored in browser localStorage).
 
 ### Supported Payment Methods
 - **WebLN**: Browser extension wallets (Alby, Zeus, etc.)
