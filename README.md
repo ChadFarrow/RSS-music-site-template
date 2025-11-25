@@ -2,7 +2,7 @@
 
 A Lightning Network-powered Value4Value music platform template for bands and artists with existing RSS feeds. Built with Next.js, featuring instant Bitcoin payments, Nostr integration, and Podcasting 2.0 support.
 
-> **Note**: This is a template repository. Clone it and customize it for your band or music project.
+> **Note**: This is a template repository. Click the green "Use this template" button above to create your own copy, or clone it to customize for your band or music project.
 
 ## Quick Start
 
@@ -78,17 +78,19 @@ NEXT_PUBLIC_ENABLE_LIGHTNING=true
 
 ### For Bands/Artists
 
-**Requirements:**
-- Existing RSS feeds with Podcasting 2.0 value tags
-- Lightning payment info already in your feeds
-- At least one album or publisher feed
+**Minimum Requirements:**
+- RSS feeds with your music (that's all you need!)
+
+**Optional (can add later):**
+- Lightning payment info in your feeds (for Value4Value payments)
+- Podcasting 2.0 value tags (for automatic payment splitting)
 
 **Quick Setup:**
-1. Copy `env.lightning.template` to `.env.local`
+1. Copy `env.lightning.template` to `.env.local` (or `env.basic.template` if you don't want Lightning features)
 2. Configure your site:
    - Set `NEXT_PUBLIC_SITE_NAME` to your site/brand name (defaults to "Music Site")
-   - Set `NEXT_PUBLIC_SITE_URL` to your production URL
    - Set `ADMIN_PASSPHRASE` to a secure passphrase for admin access (defaults to "admin")
+   - Set `NEXT_PUBLIC_ENABLE_LIGHTNING=false` if you don't want Lightning features
 3. Edit `data/feeds.json` with your RSS feed URLs
 4. Run `npm run dev`
 
@@ -242,6 +244,134 @@ To give your site a permanent Nostr identity for posting boosts:
 - **NWC (Nostr Wallet Connect)**: Alby Hub, Mutiny, and other NWC-compatible wallets
 - **Lightning Addresses**: chadf@getalby.com, user@strike.me, etc.
 - **Node Pubkeys**: Direct keysend to Lightning node addresses
+
+## Deployment
+
+### Prerequisites
+
+**All you need to get started:**
+- RSS feeds with your music (that's it!)
+- An email address (to create free accounts)
+
+**Optional features** (can be added later):
+- Lightning payments (requires Lightning wallet)
+- Nostr integration (requires Nostr account)
+- Custom domain (you can use the free `.vercel.app` domain)
+
+### Step-by-Step Deployment Guide
+
+This guide assumes you're starting from scratch with just your RSS feeds.
+
+#### Step 1: Create a GitHub Account (Free)
+
+1. Go to [github.com](https://github.com) and click "Sign up"
+2. Create a free account (no credit card required)
+3. Verify your email address
+
+#### Step 2: Create Your Site from This Template
+
+**Option A: Use GitHub Template (Easiest - Recommended)**
+
+1. **On this repository page, click the green "Use this template" button**
+2. **Select "Create a new repository"**
+3. **Name your repository** (e.g., "my-music-site")
+4. **Choose public or private** (your choice)
+5. **Click "Create repository from template"**
+6. **Your new repository is ready!** It's a copy of this template without the git history
+
+**Option B: Clone the Repository (If You Prefer)**
+
+If you're comfortable with Git:
+```bash
+git clone https://github.com/ChadFarrow/RSS-music-site-template.git my-music-site
+cd my-music-site
+# Edit your files, then push to your own GitHub repository
+```
+
+**After creating your repository:**
+
+1. **Edit `data/feeds.json`** with your RSS feed URLs
+2. **Edit environment variables** (see Configuration section below)
+3. **Commit your changes** (GitHub web interface has an "Edit" button, or use Git)
+
+#### Step 3: Create a Vercel Account (Free)
+
+1. Go to [vercel.com](https://vercel.com)
+2. Click "Sign Up" and choose "Continue with GitHub"
+3. Authorize Vercel to access your GitHub account
+4. Complete the signup (no credit card required)
+
+#### Step 4: Deploy Your Site
+
+1. **In Vercel dashboard:**
+   - Click "Add New Project"
+   - Select your GitHub repository
+   - Vercel will automatically detect it's a Next.js project
+
+2. **Configure your site:**
+   - **Project Name**: Your site name (or leave default)
+   - **Framework Preset**: Next.js (auto-detected)
+   - **Root Directory**: `./` (leave default)
+
+3. **Add Environment Variables:**
+   Click "Environment Variables" and add:
+   ```bash
+   NEXT_PUBLIC_SITE_NAME=Your Music Site Name
+   ADMIN_PASSPHRASE=choose-a-secure-password
+   NEXT_PUBLIC_SITE_URL=https://your-site.vercel.app
+   ```
+   
+   **Optional** (only if you want Lightning payments):
+   ```bash
+   NEXT_PUBLIC_ENABLE_LIGHTNING=true
+   ```
+   
+   **Optional** (only if you want Nostr integration):
+   ```bash
+   NEXT_PUBLIC_SITE_NOSTR_NSEC=nsec1... (generate with: node scripts/generate-nostr-keys.js)
+   NEXT_PUBLIC_SITE_NOSTR_NPUB=npub1...
+   ```
+
+4. **Deploy:**
+   - Click "Deploy"
+   - Wait 2-3 minutes for the build to complete
+   - Your site will be live at `https://your-site.vercel.app`
+
+#### Step 5: Add Your RSS Feeds
+
+1. **After deployment, edit your feeds:**
+   - Go to your GitHub repository
+   - Edit `data/feeds.json`
+   - Add your RSS feed URLs
+   - Commit the changes
+
+2. **Vercel will automatically redeploy** when you push changes to GitHub
+
+#### That's It!
+
+Your music site is now live and free! The free tier includes:
+- ✅ 100GB bandwidth/month
+- ✅ Unlimited requests
+- ✅ Free SSL certificate
+- ✅ Global CDN
+- ✅ Automatic deployments
+
+**Cost:** $0/month - perfect for music sites!
+
+### Optional: Custom Domain
+
+If you have your own domain:
+1. Go to your Vercel project settings
+2. Click "Domains"
+3. Add your domain
+4. Follow the DNS configuration instructions
+5. Free SSL certificate is included automatically
+
+### Alternative Hosting (If You Prefer)
+
+- **Netlify**: Similar free tier, also easy to use
+- **Railway**: Free tier with $5 credit/month
+- **Render**: Free tier (spins down after inactivity)
 
 ## API Endpoints
 
