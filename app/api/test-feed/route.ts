@@ -14,15 +14,16 @@ export async function GET(request: NextRequest) {
     let filePath: string;
     
     // Map feed names to file paths
+    // Generic test feed names - users can add their own test feeds
     switch (feedName) {
-      case 'test-doerfels-publisher':
-        filePath = join(process.cwd(), 'public', 'test-doerfels-publisher.xml');
+      case 'test-publisher':
+        filePath = join(process.cwd(), 'public', 'test-publisher.xml');
         break;
-      case 'doerfels-publisher':
-        filePath = join(process.cwd(), 'doerfels-publisher-feed.xml');
+      case 'test-album':
+        filePath = join(process.cwd(), 'public', 'test-album.xml');
         break;
       default:
-        return NextResponse.json({ error: 'Unknown feed name' }, { status: 404 });
+        return NextResponse.json({ error: 'Unknown feed name. Use test-publisher or test-album' }, { status: 404 });
     }
 
     const xmlContent = readFileSync(filePath, 'utf-8');

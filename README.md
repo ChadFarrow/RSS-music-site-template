@@ -78,8 +78,30 @@ NEXT_PUBLIC_ENABLE_LIGHTNING=true
 
 **Quick Setup:**
 1. Copy `env.lightning.template` to `.env.local`
-2. Edit `data/feeds.json` with your RSS feed URLs
-3. Run `npm run dev`
+2. Configure your site:
+   - Set `NEXT_PUBLIC_SITE_NAME` to your site/brand name (defaults to "Music Site")
+   - Set `NEXT_PUBLIC_SITE_URL` to your production URL
+   - Set `ADMIN_PASSPHRASE` to a secure passphrase for admin access (defaults to "admin")
+3. Edit `data/feeds.json` with your RSS feed URLs
+4. Run `npm run dev`
+
+### Site Branding
+
+Customize your site name and branding via environment variables:
+
+```bash
+# Site name displayed throughout the site
+NEXT_PUBLIC_SITE_NAME="Your Music Site Name"
+
+# Admin panel passphrase
+ADMIN_PASSPHRASE="your-secure-passphrase"
+```
+
+The site name will appear in:
+- Page titles and metadata
+- Navigation breadcrumbs
+- PWA install prompts
+- Admin panel headers
 
 ## Available Scripts
 

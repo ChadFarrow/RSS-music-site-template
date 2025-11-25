@@ -348,8 +348,10 @@ export class BoostToNostrService {
         eventTemplate.tags.push(['k', 'podcast:item:guid']);
         // i tag contains the actual identifier with URL hint
         const itemTag = ['i', `podcast:item:guid:${options.track.guid}`];
-        if (itdvUrl) {
-          itemTag.push(itdvUrl);
+        // Add site URL as hint if available
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+        if (siteUrl) {
+          itemTag.push(siteUrl);
         }
         eventTemplate.tags.push(itemTag);
       }
@@ -360,8 +362,10 @@ export class BoostToNostrService {
         eventTemplate.tags.push(['k', 'podcast:guid']);
         // i tag contains the actual identifier with URL hint
         const feedTag = ['i', `podcast:guid:${options.track.feedGuid}`];
-        if (itdvUrl) {
-          feedTag.push(itdvUrl);
+        // Add site URL as hint if available
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+        if (siteUrl) {
+          feedTag.push(siteUrl);
         }
         eventTemplate.tags.push(feedTag);
       }
@@ -371,8 +375,10 @@ export class BoostToNostrService {
         eventTemplate.tags.push(['k', 'podcast:publisher:guid']);
         // i tag contains the actual identifier with URL hint
         const publisherTag = ['i', `podcast:publisher:guid:${options.track.publisherGuid}`];
-        if (itdvUrl) {
-          publisherTag.push(itdvUrl);
+        // Add site URL as hint if available
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+        if (siteUrl) {
+          publisherTag.push(siteUrl);
         }
         eventTemplate.tags.push(publisherTag);
       }

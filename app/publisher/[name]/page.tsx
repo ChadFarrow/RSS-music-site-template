@@ -1,12 +1,14 @@
 import { Metadata } from 'next';
 import PublisherDetailClient from './PublisherDetailClient';
+import { getSiteName } from '@/lib/site-config';
 
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params;
   const publisherName = decodeURIComponent(name).replace(/-/g, ' ');
   
+  const siteName = getSiteName();
   return {
-    title: `${publisherName} | Into the Doerfel-Verse`,
+    title: `${publisherName} | ${siteName}`,
     description: `View all albums from ${publisherName}`,
   };
 }

@@ -1,13 +1,15 @@
 import { Metadata } from 'next';
 import AlbumDetailClient from './AlbumDetailClient';
+import { getSiteName } from '@/lib/site-config';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const albumTitle = decodeURIComponent(id).replace(/-/g, ' ');
   
+  const siteName = getSiteName();
   return {
-      title: `${albumTitle} | Into the Doerfel-Verse`,
-  description: `Listen to ${albumTitle} on Into the Doerfel-Verse`,
+      title: `${albumTitle} | ${siteName}`,
+  description: `Listen to ${albumTitle} on ${siteName}`,
   };
 }
 

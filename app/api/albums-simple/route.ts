@@ -24,25 +24,9 @@ export async function GET() {
       return response;
     }
     
-    // Fallback to minimal hardcoded data if no static file exists
-    const fallbackAlbums = [
-      {
-        title: "Bloodshot Lies",
-        artist: "Doerfel Family",
-        description: "The album",
-        coverArt: "/bloodshot-lies-big.png",
-        tracks: [
-          {
-            title: "Bloodshot Lies",
-            duration: "3:45",
-            url: "https://www.doerfelverse.com/audio/bloodshot-lies.mp3",
-            trackNumber: 1
-          }
-        ],
-        releaseDate: "2024-01-01",
-        feedId: "fallback"
-      }
-    ];
+    // Fallback to empty array if no static file exists
+    // Users should configure their own feeds in data/feeds.json
+    const fallbackAlbums: any[] = [];
     
     const response = NextResponse.json({
       albums: fallbackAlbums,

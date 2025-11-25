@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getSiteName } from '@/lib/site-config';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -104,7 +105,7 @@ export default function PWAInstallPrompt() {
             </svg>
           </div>
           <div className="ml-3 flex-1">
-            <h3 className="text-sm font-medium">Install DoerfelVerse</h3>
+            <h3 className="text-sm font-medium">Install {getSiteName()}</h3>
             <p className="text-xs text-blue-100 mt-1">
               Tap <svg className="inline w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -143,7 +144,7 @@ export default function PWAInstallPrompt() {
             </svg>
           </div>
           <div className="ml-3 flex-1">
-            <h3 className="text-sm font-medium">Install DoerfelVerse</h3>
+            <h3 className="text-sm font-medium">Install {getSiteName()}</h3>
             <p className="text-xs text-blue-100 mt-1">
               Install this app on your device for a better experience and offline access.
             </p>

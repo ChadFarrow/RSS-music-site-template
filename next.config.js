@@ -195,7 +195,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'www.doerfelverse.com',
+        hostname: process.env.NEXT_PUBLIC_IMAGE_DOMAIN?.replace(/^https?:\/\//, '').split('/')[0] || '*',
         port: '',
         pathname: '/**',
       },

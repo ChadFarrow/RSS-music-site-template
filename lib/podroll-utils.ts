@@ -3,9 +3,8 @@
  */
 
 // URLs to exclude from podroll displays (non-music podcast feeds)
-const EXCLUDED_PODROLL_URLS = [
-  'https://www.doerfelverse.com/feeds/intothedoerfelverse.xml'
-];
+// Users can configure their own exclusions via environment variables or config
+const EXCLUDED_PODROLL_URLS: string[] = [];
 
 /**
  * Filter out excluded URLs from podroll items

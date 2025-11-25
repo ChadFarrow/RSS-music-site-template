@@ -44,13 +44,13 @@ function createBoostTLVRecords(metadata: BoostMetadata, recipientName?: string, 
     episode: metadata.title || 'Unknown Title',
     action: 'boost',
     app_name: metadata.appName || 'HPM Lightning',
-    // Use actual feed URL from metadata, fallback to main podcast feed
-    feed: metadata.feedUrl || 'https://www.doerfelverse.com/feeds/intothedoerfelverse.xml',
-    url: metadata.feedUrl || 'https://www.doerfelverse.com/feeds/intothedoerfelverse.xml',
+    // Use actual feed URL from metadata
+    feed: metadata.feedUrl || '',
+    url: metadata.feedUrl || '',
     message: metadata.message || '',
     ...(metadata.timestamp && { ts: metadata.timestamp }),
-    // Use proper feedId (lowercase 'd') for Helipad compatibility - it expects feedId not feedID
-    feedId: metadata.feedUrl === 'https://www.doerfelverse.com/feeds/bloodshot-lies-album.xml' ? "6590183" : "6590182",
+    // Feed ID should come from feed metadata, not hardcoded
+    ...(metadata.feedUrl && { feedId: metadata.feedUrl }),
     // Add Helipad-specific GUID fields
     ...(metadata.itemGuid && { episode_guid: metadata.itemGuid }),
     ...(metadata.itemGuid && { remote_item_guid: metadata.itemGuid }),

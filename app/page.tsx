@@ -449,7 +449,8 @@ export default function HomePage() {
       const sortWithHierarchy = (albums: Album[]) => {
         return albums.sort((a, b) => {
           // Pin specific albums to the top in order
-          const pinnedOrder = ["Bloodshot Lies - The Album", "Think EP", "Music From The Doerfel-Verse"];
+          // Users can configure pinned albums via environment variable or config
+          const pinnedOrder: string[] = process.env.NEXT_PUBLIC_PINNED_ALBUMS?.split(',') || [];
           const aIndex = pinnedOrder.indexOf(a.title);
           const bIndex = pinnedOrder.indexOf(b.title);
           

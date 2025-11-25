@@ -110,7 +110,7 @@ const cacheClearHTML = `
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Clear Cache - DoerfelVerse</title>
+    <title>Clear Cache</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 

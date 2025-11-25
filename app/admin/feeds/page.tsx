@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/components/Toast';
+import { getSiteName } from '@/lib/site-config';
 
 interface Feed {
   id: string;
@@ -261,7 +262,7 @@ export default function AdminFeedsPage() {
             </Link>
             <div>
               <h1 className="text-2xl font-bold">RSS Feed Management</h1>
-              <p className="text-gray-400 text-sm">Manage music feeds for Into the Doerfel-Verse</p>
+              <p className="text-gray-400 text-sm">Manage music feeds for {getSiteName()}</p>
             </div>
           </div>
         </div>

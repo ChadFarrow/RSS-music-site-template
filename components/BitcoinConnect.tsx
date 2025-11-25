@@ -234,12 +234,12 @@ export function BitcoinConnectPayment({
         action: 'boost',
         app_name: boostMetadata.appName || 'HPM Lightning',
         // Use actual feed URL from metadata for proper Helipad recognition
-        feed: boostMetadata.feedUrl || 'https://www.doerfelverse.com/feeds/intothedoerfelverse.xml',
-        url: boostMetadata.feedUrl || 'https://www.doerfelverse.com/feeds/intothedoerfelverse.xml',
+        feed: boostMetadata.feedUrl || '',
+        url: boostMetadata.feedUrl || '',
         message: boostMetadata.message || '',
         ...(boostMetadata.timestamp && { ts: boostMetadata.timestamp }),
-        // Use proper feedId (lowercase 'd') for Helipad compatibility - it expects feedId not feedID
-        feedId: boostMetadata.feedUrl === 'https://www.doerfelverse.com/feeds/bloodshot-lies-album.xml' ? "6590183" : "6590182",
+        // Feed ID should come from feed metadata, not hardcoded
+        ...(boostMetadata.feedUrl && { feedId: boostMetadata.feedUrl }),
         // Add Helipad-specific GUID fields
         ...(boostMetadata.itemGuid && { episode_guid: boostMetadata.itemGuid }),
         ...(boostMetadata.itemGuid && { remote_item_guid: boostMetadata.itemGuid }),
@@ -661,9 +661,9 @@ export function BitcoinConnectPayment({
               console.log('✅ WORKING (Castamatic to Sovereign Feeds):');
               console.log('  feedID: 6590182 (numeric)');
               console.log('  episode_guid: b4578bea-855b-48a6-a747-1a09ed44a19a');
-              console.log('  url: https://www.doerfelverse.com/feeds/intothedoerfelverse.xml');
+              console.log('  url: [feed URL from metadata]');
               console.log('❓ OUR APP (HPM Lightning):');
-              console.log(`  feedId: ${boostMetadata?.feedUrl === 'https://www.doerfelverse.com/feeds/bloodshot-lies-album.xml' ? "6590183" : "6590182"} (FIXED: using lowercase feedId for Helipad)`);
+              console.log(`  feedId: ${boostMetadata?.feedUrl || 'from metadata'} (using feed URL as feedId)`);
               console.log(`  episode_guid: ${boostMetadata?.itemGuid || 'missing'}`);
               console.log(`  url: ${boostMetadata?.feedUrl || 'RSS feed URL'}`);
               

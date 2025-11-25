@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    // Test the RSS feed directly
-    const response = await fetch('https://www.doerfelverse.com/feeds/bloodshot-lies-album.xml');
+    // Test the RSS feed parser with a sample feed
+    // In production, users should provide their own test feed URL via query parameter
+    const testFeedUrl = request.nextUrl.searchParams.get('url') || 'https://feeds.buzzsprout.com/2181713.rss';
+    const response = await fetch(testFeedUrl);
     const xmlText = await response.text();
     
     // Test XML parsing

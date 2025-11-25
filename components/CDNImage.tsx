@@ -121,7 +121,6 @@ export default function CDNImage({
       'autumn.gif',
       'WIldandfreecover-copy-2.png',
       'alandace.gif',
-      'doerfel-verse-idea-9.png',
       'SatoshiStreamer-track-1-album-art.png',
       'dvep15-art.png',
       'disco-swag.png',

@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     // Get fresh albums data from database-free endpoint
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
                    (process.env.NODE_ENV === 'production' 
-                     ? 'https://itdv-site.vercel.app' 
-                     : 'http://localhost:3002');
+                     ? process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+                     : 'http://localhost:3000');
     
     const response = await fetch(`${baseUrl}/api/albums-no-db`, {
       next: { revalidate: 60 }, // Cache for 1 minute

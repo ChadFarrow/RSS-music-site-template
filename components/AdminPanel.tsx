@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from '@/components/Toast';
+import { getAdminPassphrase } from '@/lib/site-config';
 
 // ManagedFeed type definition (previously from feed-manager)
 interface ManagedFeed {
@@ -48,7 +49,8 @@ export default function AdminPanel() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (passphrase.trim().toLowerCase() === 'doerfel') {
+    const adminPassphrase = getAdminPassphrase();
+    if (passphrase.trim().toLowerCase() === adminPassphrase.toLowerCase()) {
       setIsAuthenticated(true);
       setAuthError('');
       localStorage.setItem('admin-authenticated', 'true');

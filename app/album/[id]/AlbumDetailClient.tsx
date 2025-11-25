@@ -12,6 +12,7 @@ import dynamic from 'next/dynamic';
 import { filterPodrollItems } from '@/lib/podroll-utils';
 import confetti from 'canvas-confetti';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
+import { getSiteName, getSiteUrl } from '@/lib/site-config';
 
 // Dynamic import for ControlsBar
 const ControlsBar = dynamic(() => import('@/components/ControlsBar'), {
@@ -813,7 +814,7 @@ export default function AlbumDetailClient({ albumTitle, initialAlbum }: AlbumDet
                 
                 <div className="hidden sm:flex items-center gap-2 text-sm">
                   <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-                    Into the Doerfel-Verse
+                    {getSiteName()}
                   </Link>
                   <span className="text-gray-600">/</span>
                   <span className="font-medium truncate max-w-[200px]">{album.title}</span>
@@ -1148,7 +1149,7 @@ export default function AlbumDetailClient({ albumTitle, initialAlbum }: AlbumDet
                     title: album.title,
                     artist: album.artist,
                     album: album.title,
-                    url: `https://doerfelverse.com/album/${encodeURIComponent(albumTitle)}`,
+                    url: `${getSiteUrl()}/album/${encodeURIComponent(albumTitle)}`,
                     appName: 'HPM Lightning',
                     senderName: senderName?.trim() || 'Super Fan',
                     message: boostMessage?.trim() || undefined,
@@ -1268,7 +1269,7 @@ export default function AlbumDetailClient({ albumTitle, initialAlbum }: AlbumDet
                     artist: album?.artist || 'Unknown Artist',
                     album: album?.title || 'Unknown Album',
                     episode: selectedTrack.title,
-                    url: `https://doerfelverse.com/album/${encodeURIComponent(albumTitle)}`,
+                    url: `${getSiteUrl()}/album/${encodeURIComponent(albumTitle)}`,
                     appName: 'HPM Lightning',
                     senderName: senderName?.trim() || undefined,
                     message: trackBoostMessage?.trim() || undefined,

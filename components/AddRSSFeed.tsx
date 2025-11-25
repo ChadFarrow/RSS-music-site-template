@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getAdminPassphrase } from '@/lib/site-config';
 
 interface AddRSSFeedProps {
   onAddFeed: (feedUrl: string) => void;
@@ -17,7 +18,8 @@ export default function AddRSSFeed({ onAddFeed, isLoading = false }: AddRSSFeedP
     e.preventDefault();
     
     // Check passphrase first
-    if (passphrase.trim().toLowerCase() !== 'doerfel') {
+    const adminPassphrase = getAdminPassphrase();
+    if (passphrase.trim().toLowerCase() !== adminPassphrase.toLowerCase()) {
       setError('Incorrect passphrase. Please try again.');
       return;
     }

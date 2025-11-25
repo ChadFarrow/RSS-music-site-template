@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // Return hardcoded feeds for admin display
+    // Note: These are example feeds - users should configure their own in data/feeds.json
     const hardcodedFeeds = [
-      { originalUrl: 'https://value4value.live/feeds/doerfels.xml', type: 'album' },
       { originalUrl: 'https://podcastindex.org/api/1.0/episodes/byfeedurl?url=https%3A%2F%2Fchrisdobrien.podhome.fm%2Frss&pretty', type: 'album' },
       { originalUrl: 'https://rss.buzzsprout.com/2022460.rss', type: 'album' },
       { originalUrl: 'https://value4value.live/feeds/ajjohnson.xml', type: 'album' },

@@ -49,7 +49,7 @@ async function buildStaticData() {
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXT_PUBLIC_SITE_URL 
       ? process.env.NEXT_PUBLIC_SITE_URL
-      : 'https://itdv-site.vercel.app';
+      : 'http://localhost:3000';
     
     console.log(`📡 Fetching album data from: ${baseUrl}/api/albums`);
     
