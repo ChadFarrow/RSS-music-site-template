@@ -1,0 +1,57 @@
+{
+  "name": "[YOUR_BAND_NAME] - Music Platform",
+  "short_name": "[BAND]",
+  "description": "Value4Value music platform powered by Lightning Network",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["music", "entertainment", "lifestyle"],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "handle_links": "preferred",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any",
+      "note": "Add your own PWA icons"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/placeholder-podcast.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Music Platform Screenshot"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Albums",
+      "short_name": "Albums",
+      "description": "Browse all available albums",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-76x76.png",
+          "sizes": "76x76",
+          "type": "image/png",
+          "note": "Add shortcut icon"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

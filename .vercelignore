@@ -1,0 +1,27 @@
+# Exclude development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Exclude test files
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+
+# Exclude documentation
+README.md
+*.md
+
+# Exclude scripts (except build scripts needed for deployment)
+scripts/*
+!scripts/auto-version-update.js
+!scripts/build-rss-data.ts
+
+# Exclude cache files (now served from Bunny.net CDN)
+data/cache/
+
+# Exclude any temporary files
+*.tmp
+*.temp 
