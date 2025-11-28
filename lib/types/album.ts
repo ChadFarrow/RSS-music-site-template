@@ -38,6 +38,8 @@ export interface Track {
   url: string;
   trackNumber: number;
   image?: string;
+  artist?: string; // Artist name (often added when tracks are played from albums)
+  album?: string; // Album name (often added when tracks are played from albums)
   value?: RSSValue; // Track-level podcast:value data
   paymentRecipients?: PaymentRecipient[]; // Pre-processed track payment recipients
   // Podcast GUIDs for Nostr boost tagging
