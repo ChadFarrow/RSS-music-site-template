@@ -314,7 +314,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     }
   }, [playlist, currentTrackIndex, isPlaying, currentAlbum]);
-
   // Handle track ended event - needs to be after nextTrack is declared
   useEffect(() => {
     const audio = audioRef.current;
