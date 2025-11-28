@@ -1,4 +1,16 @@
 {
-  "albums": []
+  "albums": [
+    {
+      "title": "Example Album",
+      "artist": "Example Artist",
+      "colors": {
+        "dominant": "rgb(100, 150, 200)",
+        "palette": {
+          "primary": "hsl(210, 50%, 60%)",
+          "secondary": "hsl(210, 40%, 70%)",
+          "accent": "hsl(210, 60%, 50%)"
+        }
+      }
+    }
+  ]
 }
-

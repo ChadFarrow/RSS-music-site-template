@@ -1,4 +1,27 @@
 {
-  "albums": []
+  "albums": [
+    {
+      "title": "Example Album",
+      "artist": "Example Artist",
+      "description": "This is an example album description",
+      "coverArt": "https://example.com/album-cover.jpg",
+      "tracks": [
+        {
+          "title": "Example Track 1",
+          "duration": "3:45",
+          "url": "https://example.com/track1.mp3",
+          "trackNumber": 1
+        },
+        {
+          "title": "Example Track 2",
+          "duration": "4:12",
+          "url": "https://example.com/track2.mp3",
+          "trackNumber": 2
+        }
+      ],
+      "releaseDate": "2024-01-01",
+      "feedId": "example-feed-id",
+      "feedUrl": "https://example.com/your-album-feed.xml"
+    }
+  ]
 }
-

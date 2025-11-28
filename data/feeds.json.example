@@ -1,2 +1,4 @@
-[]
-
+[
+  "https://example.com/your-album-feed.xml",
+  "https://example.com/your-publisher-feed.xml"
+]
