@@ -157,13 +157,52 @@ export default function HomePage() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [viewType, setViewType] = useState<ViewType>('grid');
 
-  // Shuffle functionality
+  // Fisher-Yates shuffle algorithm
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Global shuffle functionality - plays all tracks from all albums in random order
   const handleShuffle = () => {
     try {
-      toggleShuffle();
-      toast.success('🎲 Shuffle toggled!');
+      // Collect all tracks from all albums
+      const allTracks: Track[] = [];
+      
+      albums.forEach(album => {
+        album.tracks.forEach(track => {
+          // Only include tracks with valid URLs
+          if (track.url && track.url.trim() !== '') {
+            // Map track to include artist, album, and image metadata
+            allTracks.push({
+              ...track,
+              artist: album.artist,
+              album: album.title,
+              image: track.image || track.imageUrl || album.coverArt
+            });
+          }
+        });
+      });
+
+      if (allTracks.length === 0) {
+        toast.error('No playable tracks found');
+        return;
+      }
+
+      // Shuffle the tracks
+      const shuffledTracks = shuffleArray(allTracks);
+
+      // Play the shuffled playlist and open full screen player
+      globalPlayAlbum(shuffledTracks, 0, 'Shuffle All');
+
+      toast.success(`🎲 Shuffling ${shuffledTracks.length} tracks!`);
     } catch (error) {
-      toast.error('Error toggling shuffle');
+      console.error('Error shuffling tracks:', error);
+      toast.error('Error starting shuffle');
     }
   };
 
