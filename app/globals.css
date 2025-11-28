@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide Bitcoin Connect balance display - targeted approach */
+bc-button {
+  --bc-show-balance: none !important;
+  --bc-balance-display: none !important;
+}
+
+/* Only hide specific balance-related elements, preserve connection status */
+bc-balance,
+bc-button [class*="balance"],
+bc-button [data-balance],
+bc-button .balance,
+bc-button .sats,
+bc-button .sat {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  /* Background image fallback */
+  .bg-site-background {
+    background: url('/background.png') center/contain fixed;
+    background-attachment: fixed;
+  }
+  
+  /* Ensure content is readable over background */
+  .content-overlay {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+}
+
+@layer components {
+  .podcast-card {
+    @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden;
+  }
+  
+  .episode-card {
+    @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 border border-gray-100;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  /* Scrollbar utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Audio Player Slider Styles */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .slider::-webkit-slider-track {
+    background: #4b5563;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ffffff;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .slider::-moz-range-track {
+    background: #4b5563;
+    height: 4px;
+    border-radius: 2px;
+    border: none;
+  }
+
+  .slider::-moz-range-thumb {
+    background: #ffffff;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* Large Slider Styles for Now Playing Screen */
+  .slider-large::-webkit-slider-thumb {
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .slider-large::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: none;
+  }
+}
+
+@layer utilities {
+  /* iOS Safe Area Support */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Add extra padding on top of safe area for better spacing */
+  .pb-safe-plus {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Top safe area for iPhone dynamic island */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Add extra padding on top of safe area for better spacing */
+  .pt-safe-plus {
+    padding-top: calc(1rem + env(safe-area-inset-top));
+  }
+  
+  /* Enhanced iOS top padding - more generous spacing */
+  .pt-safe-xl {
+    padding-top: calc(2rem + env(safe-area-inset-top));
+  }
+  
+  /* iOS specific padding for main content areas */
+  .pt-ios {
+    padding-top: 0.5rem;
+  }
+  
+  /* For devices with notch/dynamic island - extra top padding */
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .pt-ios {
+      padding-top: calc(0.5rem + env(safe-area-inset-top));
+    }
+  }
+
+  /* Now Playing screen safe area - uses max() for graceful fallback */
+  .pt-safe-max {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .pb-safe-max-2 {
+    padding-bottom: max(2rem, calc(2rem + env(safe-area-inset-bottom)));
+  }
+}
+
+/* PWA Standalone Mode Adjustments */
+@media (display-mode: standalone) {
+  /* Ensure the player bar is visible in standalone mode */
+  .fixed.bottom-0 {
+    bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Add padding to body for standalone mode */
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Enhanced top padding for PWA standalone mode */
+  .pt-ios {
+    padding-top: calc(0.75rem + env(safe-area-inset-top));
+  }
+}
+
+/* iOS specific styles */
+@supports (-webkit-touch-callout: none) {
+  /* iOS specific adjustments */
+  .pt-ios {
+    padding-top: calc(0.625rem + env(safe-area-inset-top));
+  }
+} 

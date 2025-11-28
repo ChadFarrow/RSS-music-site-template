@@ -1,0 +1,372 @@
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: false, // Disable registration entirely
+  skipWaiting: true,
+  disable: true, // Disable Service Worker for performance
+  // Exclude RSC payloads and critical Next.js files from service worker caching
+  exclude: [
+    /_next\/static\/.*\/_buildManifest\.js$/,
+    /_next\/static\/.*\/_ssgManifest\.js$/,
+    /_next\/static\/.*\/_app-build-manifest\.json$/,
+    /_next\/webpack-hmr/,
+    /_next\/static\/.*\/.*\.js$/,
+    /_next\/static\/.*\/.*\.mjs$/,
+    /_next\/static\/.*\/.*\.css$/,
+    /api\/proxy-image/, // Exclude proxy API from service worker
+    /api\/optimized-images/, // Exclude optimized images API from service worker
+    /api\/albums/, // Exclude albums API from service worker to prevent decoding issues
+    /api\/parsed-feeds/, // Exclude parsed-feeds API from service worker
+    /api\/feeds/, // Exclude feeds API from service worker
+    /\?_rsc=/, // Exclude RSC payloads from service worker
+    /album\/.*\?_rsc=/, // Exclude album RSC payloads
+  ],
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+      handler: 'NetworkFirst', // Changed from CacheFirst to NetworkFirst for mobile
+      options: {
+        cacheName: 'images',
+        expiration: {
+          maxEntries: 1000,
+          maxAgeSeconds: 60 * 60 * 24 * 1, // Reduced to 1 day for fresher content
+        },
+        networkTimeoutSeconds: 3, // Reduced timeout to 3 seconds for faster fallback
+        cacheableResponse: {
+          statuses: [0, 200], // Cache successful responses and opaque responses
+        },
+      },
+    },
+    // Network first for RSS feeds to prevent 503 errors
+    {
+      urlPattern: /^https:\/\/.*\.xml$/,
+      handler: 'NetworkFirst', // Changed from StaleWhileRevalidate to NetworkFirst
+      options: {
+        cacheName: 'rss-feeds',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60, // 1 hour
+        },
+        networkTimeoutSeconds: 15, // Add timeout
+      },
+    },
+    // Network first for RSC payloads and critical Next.js files
+    {
+      urlPattern: /_next\/static\/.*\/.*\.js$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'next-js-files',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60, // 1 hour
+        },
+        networkTimeoutSeconds: 3,
+      },
+    },
+    // Network first for audio files to prevent caching issues
+    {
+      urlPattern: /^https:\/\/.*\.(?:mp3|wav|ogg|m4a)$/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'audio-files',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60 * 24, // 24 hours
+        },
+        networkTimeoutSeconds: 10,
+      },
+    },
+    // Network first for proxy audio to prevent CORS issues
+    {
+      urlPattern: /\/api\/proxy-audio/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'proxy-audio',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 30, // 30 minutes
+        },
+        networkTimeoutSeconds: 15,
+      },
+    },
+
+  ],
+});
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Domain configuration for Vercel deployment
+  basePath: '',
+  
+  // Dynamic route configuration to prevent build issues
+  experimental: {
+    // Disable static generation for dynamic API routes
+    workerThreads: false,
+    cpus: 1,
+    optimizePackageImports: ['lucide-react', '@getalby/bitcoin-connect'],
+  },
+  
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
+  
+  // Performance optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Webpack configuration for nostr-tools and crypto polyfills
+  webpack: (config, { isServer, dev }) => {
+    // Handle Node.js modules for client-side - only when using nostr-tools
+    if (!isServer) {
+      // Only load crypto polyfills when needed (lazy)
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+        stream: false,
+        buffer: false,
+        util: false,
+        url: false,
+        assert: false,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+      
+      // Inject chrome polyfill using webpack's BannerPlugin
+      // This is safer than manually manipulating assets
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.BannerPlugin({
+          banner: `(function(){try{if(typeof globalThis!=='undefined'&&!globalThis.chrome){globalThis.chrome={runtime:{onConnect:{},onMessage:{},connect:function(){return{onMessage:{},postMessage:function(){},disconnect:function(){}}},sendMessage:function(){return Promise.resolve()},getURL:function(){return''},getManifest:function(){return{}}},storage:{local:{},sync:{}},tabs:{query:function(){return Promise.resolve([])},create:function(){return Promise.resolve({})},update:function(){return Promise.resolve({})},get:function(){return Promise.resolve({})}},windows:{create:function(){return Promise.resolve({})},get:function(){return Promise.resolve({})},getAll:function(){return Promise.resolve([])}},extension:{getURL:function(){return''},getBackgroundPage:function(){return null}}};globalThis.browser=globalThis.chrome}if(typeof window!=='undefined'&&!window.chrome){window.chrome=globalThis.chrome||{runtime:{onConnect:{},onMessage:{},connect:function(){return{onMessage:{},postMessage:function(){},disconnect:function(){}}},sendMessage:function(){return Promise.resolve()},getURL:function(){return''},getManifest:function(){return{}}},storage:{local:{},sync:{}},tabs:{query:function(){return Promise.resolve([])},create:function(){return Promise.resolve({})},update:function(){return Promise.resolve({})},get:function(){return Promise.resolve({})}},windows:{create:function(){return Promise.resolve({})},get:function(){return Promise.resolve({})},getAll:function(){return Promise.resolve([])}},extension:{getURL:function(){return''},getBackgroundPage:function(){return null}}};window.browser=window.chrome}}catch(e){}})();`,
+          raw: true,
+          entryOnly: false,
+          // Only inject banner into JavaScript files, not CSS
+          test: /\.js$/,
+        })
+      );
+    }
+    
+    // Optimize chunks in production
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          framework: {
+            chunks: 'all',
+            name: 'framework',
+            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          lib: {
+            test(module) {
+              return module.size() > 160000 &&
+                /node_modules[\\/]/.test(module.identifier());
+            },
+            name(module) {
+              const hash = require('crypto').createHash('sha1');
+              hash.update(module.identifier());
+              return hash.digest('hex').substring(0, 8);
+            },
+            priority: 30,
+            minChunks: 1,
+            reuseExistingChunk: true,
+          },
+          commons: {
+            name: 'commons',
+            minChunks: 2,
+            priority: 20,
+          },
+          shared: {
+            name(module, chunks) {
+              return 'shared';
+            },
+            priority: 10,
+            test: /[\\/]components[\\/]/,
+            minChunks: 2,
+            reuseExistingChunk: true,
+          },
+        },
+        maxAsyncRequests: 25,
+        maxInitialRequests: 20,
+      };
+    }
+    
+    return config;
+  },
+  
+  // Revert static export - doesn't work with API routes
+  // output: 'export',
+  // trailingSlash: true,
+  // distDir: 'out',
+
+  
+  // Image optimization configuration
+  images: {
+    remotePatterns: [
+      // Allow images from any domain (RSS feeds can host images anywhere)
+      {
+        protocol: 'https',
+        hostname: '*',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '*',
+        port: '',
+        pathname: '/**',
+      },
+      // Additional image hosting domains
+      {
+        protocol: 'https',
+        hostname: 'static.wixstatic.com',
+        port: '',
+        pathname: '/**',
+      },
+      // RSS feed image domains that were causing HTTP 400 errors
+      {
+        protocol: 'https',
+        hostname: 'noagendaassets.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.rssblue.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Heycitizen domain
+      {
+        protocol: 'https',
+        hostname: 'files.heycitizen.xyz',
+        port: '',
+        pathname: '/**',
+      },
+      // Bitpunk.fm domains
+      {
+        protocol: 'https',
+        hostname: 'files.bitpunk.fm',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.bitpunk.fm',
+        port: '',
+        pathname: '/**',
+      },
+      // Anni Powell Music domain
+      {
+        protocol: 'https',
+        hostname: 'annipowellmusic.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Additional music domains
+      {
+        protocol: 'https',
+        hostname: 'rocknrollbreakheart.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'rocknrollbreakheart.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Placeholder image service
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Nostr image hosting
+      {
+        protocol: 'https',
+        hostname: 'i.nostr.build',
+        port: '',
+        pathname: '/**',
+      },
+      // GitHub raw content for LNURL test feed artwork
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+    unoptimized: process.env.NODE_ENV === 'development', // Optimize in production
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    // Improved loading state configuration
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self' data:; script-src 'none'; img-src 'self' data: https:; sandbox;",
+    // Reduce retry attempts to prevent excessive HTTP 400 errors
+    loader: 'default',
+    loaderFile: undefined,
+  },
+
+  // Performance and caching
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
+  
+  // Headers for performance
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+}
+
+module.exports = withPWA(nextConfig)
