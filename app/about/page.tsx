@@ -147,7 +147,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Lightning Payments</h3>
                   <p className="text-gray-400">
-                    Instant Bitcoin payments to artists via Lightning Network. Auto-boost and manual boost support.
+                    Instant Bitcoin payments to artists via Lightning Network. Manual boost support.
                   </p>
                 </div>
 

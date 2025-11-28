@@ -61,9 +61,11 @@ See this template in action with all features enabled:
 
 ### Step 5: Add Your RSS Feeds and Visual Assets
 
+> **Note:** The template includes example files (`.example` extensions) and clean/empty data files. These are automatically generated/updated by the system when you add your feeds. You can see example file formats in `data/feeds.json.example`, `public/static-albums.json.example`, and `public/data/albums-with-colors.json.example`.
+
 1. **Edit your feeds:**
    - Go to your GitHub repository
-   - Edit `data/feeds.json`
+   - Edit `data/feeds.json` (the template starts with an empty array: `[]`)
    - Add your RSS feed URLs:
      ```json
      [
@@ -71,6 +73,14 @@ See this template in action with all features enabled:
      ]
      ```
    - Commit the changes
+   
+   **Note:** The system automatically processes and updates `feeds.json` with metadata (id, type, title, status, priority, etc.) that the site needs. After processing:
+   - **Your original URLs are preserved** in the `originalUrl` field of each feed object
+   - **Publisher feeds automatically discover album feeds**: When you add a publisher feed, the system finds and adds all album feeds from that publisher
+   - **Identifying your feeds**: 
+     - Manually added feeds have `"source": "manual"` and your original URL in the `originalUrl` field
+     - Auto-discovered feeds have `"source": "recursive"` and show the publisher feed they came from in the `discoveredFrom` field
+   - The file structure changes from a simple array to an object with a `feeds` array containing all the processed metadata
 
 2. **Add your visual assets (background, logo, icons):**
    - Go to your GitHub repository

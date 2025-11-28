@@ -2,11 +2,7 @@
 
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { toast } from '@/components/Toast';
-import { makeAutoBoostPayment } from '@/utils/payment-utils';
-import { useBoostToNostr } from '@/hooks/useBoostToNostr';
 import { getSiteName } from '@/lib/site-config';
-import { extractPaymentRecipients } from '@/lib/payment-recipient-utils';
-import { createBoostMetadata } from '@/lib/boost-metadata-utils';
 
 interface Track {
   title: string;
@@ -58,12 +54,6 @@ interface AudioContextType {
   isShuffling: boolean;
   isRepeating: boolean;
   
-  // Auto Boost
-  isAutoBoostEnabled: boolean;
-  autoBoostAmount: number;
-  toggleAutoBoost: () => void;
-  setAutoBoostAmount: (amount: number) => void;
-  
   // Now Playing Screen
   isNowPlayingOpen: boolean;
   openNowPlaying: () => void;
@@ -109,15 +99,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isShuffling, setIsShuffling] = useState(false);
   const [isRepeating, setIsRepeating] = useState(false);
   const [isNowPlayingOpen, setIsNowPlayingOpen] = useState(false);
-  
-  // Auto Boost state - hardcoded to 25 sats for testing
-  const [isAutoBoostEnabled, setIsAutoBoostEnabled] = useState(false);
-  const [autoBoostAmount, setAutoBoostAmount] = useState(25);
-
-  // Initialize Nostr boost system for auto boosts
-  const { postBoost, generateKeys, publicKey } = useBoostToNostr({ 
-    autoGenerateKeys: typeof window !== 'undefined'
-  });
 
   // Initialize audio element
   useEffect(() => {
@@ -334,113 +315,12 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [playlist, currentTrackIndex, isPlaying, currentAlbum]);
 
-  // Make triggerAutoBoost a useCallback to avoid recreation
-  const triggerAutoBoost = useCallback(async (track: Track) => {
-    try {
-      console.log('🚀 Auto boost triggered for:', track.title);
-      
-      // Get payment recipients from track data
-      // Note: currentAlbum is a string (title), not an Album object, so we can't use extractPaymentRecipients
-      // We'll rely on track-level payment recipients only for auto boosts
-      const getPaymentRecipients = () => {
-        // Check track.value.recipients if available
-        if (track?.value && track.value.type === 'lightning' && track.value.recipients && track.value.recipients.length > 0) {
-          return track.value.recipients
-            .filter((r: any) => r.type === 'node' || r.type === 'lnaddress')
-            .map((r: any) => ({
-              address: r.address,
-              split: r.split,
-              name: r.name,
-              fee: r.fee,
-              type: r.type,
-            }));
-        }
-        return null;
-      };
-
-      // Get fallback recipient (same as manual boost)
-      const getFallbackRecipient = () => {
-        return '03740ea02585ed87b83b2f76317a4562b616bd7b8ec3f925be6596932b2003fc9e';
-      };
-
-      // Create boost metadata
-      const boostMetadata = createBoostMetadata({
-        album: currentAlbum || undefined,
-        track: track,
-        senderName: 'Auto Boost', // Identify as auto boost
-        // No message for auto boosts to keep TLVs clean
-        timestamp: Math.floor(currentTime),
-        episode: track.title,
-        url: currentAlbum ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/album/${encodeURIComponent(currentAlbum)}#${encodeURIComponent(track.title || '')}` : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
-      });
-
-      // Make the payment
-      const paymentResult = await makeAutoBoostPayment({
-        amount: autoBoostAmount,
-        description: `Auto boost for ${track.title || 'Unknown Song'} by ${track.artist || 'Unknown Artist'}`,
-        recipients: getPaymentRecipients() || undefined,
-        fallbackRecipient: getFallbackRecipient(),
-        boostMetadata
-      });
-
-      if (paymentResult.success) {
-        // Post to Nostr after successful Lightning payment
-        try {
-          const trackMetadata = {
-            title: track.title,
-            artist: track.artist,
-            album: currentAlbum || undefined,
-            url: currentAlbum ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/album/${encodeURIComponent(currentAlbum)}#${encodeURIComponent(track.title || '')}` : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
-            imageUrl: track.imageUrl || track.image,
-            timestamp: Math.floor(currentTime),
-            duration: duration ? Math.floor(duration) : undefined,
-            senderName: 'Auto Boost',
-            guid: track.guid,
-            podcastGuid: track.podcastGuid,
-            feedGuid: track.feedGuid,
-            feedUrl: track.feedUrl,
-            publisherGuid: track.publisherGuid,
-            publisherUrl: track.publisherUrl
-          };
-
-          const nostrResult = await postBoost(
-            autoBoostAmount,
-            trackMetadata,
-            `Auto boost for "${track.title}"` // Identify auto boost in Nostr
-          );
-
-          if (nostrResult.success) {
-            console.log('✅ Auto boost posted to Nostr:', nostrResult.eventId);
-          } else {
-            console.warn('⚠️ Auto boost Nostr post failed:', nostrResult.error);
-          }
-        } catch (nostrError) {
-          console.warn('⚠️ Auto boost Nostr post failed:', nostrError);
-        }
-
-        toast.success(`⚡ Auto boosted "${track.title}" with ${autoBoostAmount} sats!`, 3000);
-        console.log('✅ Auto boost payment successful:', paymentResult.results);
-      } else {
-        throw new Error(paymentResult.error || 'Auto boost payment failed');
-      }
-      
-    } catch (error) {
-      console.error('Auto boost failed:', error);
-      toast.error(`Auto boost failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }, [autoBoostAmount, currentAlbum, currentTime, duration, postBoost]);
-
   // Handle track ended event - needs to be after nextTrack is declared
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleEnded = () => {
-      // Trigger auto boost if enabled and we have a current track
-      if (isAutoBoostEnabled && currentTrack) {
-        triggerAutoBoost(currentTrack);
-      }
-      
       if (isRepeating) {
         audio.currentTime = 0;
         audio.play();
@@ -454,7 +334,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [isRepeating, nextTrack, isAutoBoostEnabled, currentTrack, triggerAutoBoost]);
+  }, [isRepeating, nextTrack]);
 
   const seekTo = useCallback((time: number) => {
     if (audioRef.current) {
@@ -484,16 +364,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const toggleRepeat = () => {
     setIsRepeating(!isRepeating);
-  };
-
-  // Auto Boost functions
-  const toggleAutoBoost = () => {
-    setIsAutoBoostEnabled(!isAutoBoostEnabled);
-    if (!isAutoBoostEnabled) {
-      toast.success('🔥 Auto boost enabled! Songs will auto boost 25 sats when finished');
-    } else {
-      toast.info('Auto boost disabled');
-    }
   };
 
   // Media Session API handlers - after all functions are declared
@@ -539,10 +409,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toggleMute,
     toggleShuffle,
     toggleRepeat,
-    isAutoBoostEnabled,
-    autoBoostAmount,
-    toggleAutoBoost,
-    setAutoBoostAmount,
   };
 
   return (

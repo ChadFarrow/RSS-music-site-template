@@ -62,8 +62,6 @@ const NowPlayingScreen: React.FC<NowPlayingScreenProps> = ({ isOpen, onClose }) 
     seekTo,
     toggleShuffle,
     toggleRepeat,
-    isAutoBoostEnabled,
-    toggleAutoBoost,
   } = useAudio();
 
   // Add swipe gestures for mobile
@@ -715,22 +713,6 @@ const NowPlayingScreen: React.FC<NowPlayingScreenProps> = ({ isOpen, onClose }) 
                 <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
               </svg>
               <span className="font-medium">Boost Song</span>
-              </button>
-              
-              {/* Auto boost button positioned to the right */}
-              <button
-                onClick={toggleAutoBoost}
-                className={`absolute right-0 flex items-center gap-1 px-3 py-1 rounded-full text-xs transition-colors ${
-                  isAutoBoostEnabled 
-                    ? 'bg-yellow-400/20 text-yellow-400 border border-yellow-400/30' 
-                    : 'bg-white/10 text-white/60 border border-white/20 hover:text-white hover:border-white/30'
-                }`}
-                title={`Auto boost ${isAutoBoostEnabled ? 'enabled' : 'disabled'} - 25 sats`}
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                </svg>
-                <span className="font-medium">Auto</span>
               </button>
             </div>
           )}
