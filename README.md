@@ -205,6 +205,8 @@ If you have your own domain:
 
 If you want to run the site locally for development or testing:
 
+Requires **Node.js 24.22.1 or later** (or 22.23.4+ on the 22.x line). Older versions are missing the October 2026 security fixes.
+
 1. **Install dependencies:**
    ```bash
    npm install
